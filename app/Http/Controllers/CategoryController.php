@@ -40,6 +40,60 @@ class CategoryController extends Controller
         //save to db
         $category->save();
 
-        return response()->json($category, response::HTTP_CREATED);
+        return response()->json([
+            'Data' => $category,
+            'Response' => response::HTTP_CREATED
+        ]);
+    }
+
+    //edit category
+    public function update($id, Request $request)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                "Data" => $category,
+                "Response" => response::HTTP_NOT_FOUND,
+            ]);
+        }
+
+        $validData = $request->validate(
+            [
+                'name' => 'required',
+                'description' => 'required'
+
+            ]
+        );
+
+        $updatedCategory = new Category($validData);
+
+        //update the instance
+        $category->update($validData);
+
+        return response()->json([
+            'Data' => $updatedCategory,
+            'Response' => response::HTTP_OK,
+        ]);
+
+    }
+
+    public function delete($id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json(
+                [
+                    'Data' => $category,
+                    "Response" => response::HTTP_NOT_FOUND,
+                ]
+            );
+        }
+
+        //delete the instance
+        $category->delete();
+        return response()->json(response::HTTP_OK);
+
     }
 }
